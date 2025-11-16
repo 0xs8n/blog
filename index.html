@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Research</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: black;
+        font-family: sans-serif;
+        color: white;
+      }
+
+      canvas {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+
+      .content {
+        position: relative;
+        z-index: 10;
+        max-width: 900px;
+        margin: 40px auto 100px;
+        padding: 30px;
+        background: rgba(0,0,0,0.4);
+        border-radius: 10px;
+      }
+
+      h1, h2, h3 {
+        margin-top: 30px;
+        margin-bottom: 10px;
+      }
+
+      p {
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }
+
+      /* Top-right X link */
+      .x-follow {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 30;
+        font-size: 13px;
+        color: #ccc;
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.15);
+        transition: 0.2s ease;
+      }
+
+      .x-follow:hover {
+        color: white;
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.35);
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Top-right follow link -->
+    <a
+      class="x-follow"
+      href="https://x.com/robotics8n"
+      target="_blank"
+    >
+      follow me on X
+    </a>
+
+    <div class="content">
+      <h1>Test Article: The Mechanics Behind Early Crypto Trend Detection</h1>
+
+      <p>
+        This is a sample article used for testing readability against the
+        animated 3D background. The goal is to determine whether long-form
+        content and future research posts will display cleanly on top of the
+        fullscreen WebGL animation.
+      </p>
+
+      <h2>Why Early Trend Detection Matters</h2>
+      <p>
+        In fast-moving environments like Solana’s memecoin ecosystem,
+        information decays extremely quickly. A narrative can appear, peak,
+        and disappear within hours. The ability to detect new movements —
+        whether it's a viral meme, a high-engagement wallet cluster,
+        or an emerging ticker pattern — directly affects your entry timing
+        and risk exposure.
+      </p>
+
+      <h2>Signal Sources</h2>
+      <ul>
+        <li>Clusters of high-win-rate wallets aping the same coin</li>
+        <li>Volume spikes on inactive tokens</li>
+        <li>Fresh wallets entering a ticker simultaneously</li>
+        <li>Sudden social momentum around a name or meme</li>
+        <li>Deployer history indicating successful past launches</li>
+      </ul>
+
+      <h2>Conclusion</h2>
+      <p>
+        If you can read this article without lag or stutter, your background
+        animation setup is now fully optimized and ready for your real content.
+      </p>
+    </div>
+
+    <script>
+      let f = 0;
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight, WEBGL);
+      }
+
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+      }
+
+      function draw() {
+        background(0);
+
+        let w = PI / 6;
+        let P = w * 3;
+
+        pointLight(255, 255, 255, 0, 0, 300);
+
+        rotateX(PI / 6);
+        rotateY(f -= 0.01);
+
+        for (let x = 0; x < TAU; x += w) {
+          for (let y = 0; y < TAU; y += P) {
+            push();
+            rotateY(x);
+            rotateX(f * 0.3);
+
+            push();
+            translate(0, 0, 180);
+            torus(90, 12, 16, 8);
+            pop();
+
+            pop();
+          }
+        }
+      }
+    </script>
+
+  </body>
+</html>
