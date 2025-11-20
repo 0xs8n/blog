@@ -23,7 +23,7 @@
       z-index: -1;
     }
 
-    /* Reverted to Light Blue for links (No Green) */
+    /* Links - Light Blue */
     a { color: #4db8ff; text-decoration: none; transition: 0.2s; }
     a:hover { color: white; text-decoration: underline; }
 
@@ -45,7 +45,7 @@
     h1 {
       margin-top: 10px;
       font-size: 2rem;
-      color: white;
+      color: #4db8ff; /* Blueish Title */
       line-height: 1.3;
     }
 
@@ -58,7 +58,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Removed Green from h3 - kept it neutral white/bold */
     h3 {
       margin-top: 35px;
       color: #ffffff; 
@@ -104,11 +103,11 @@
       color: orange;
     }
 
-    /* Changed Bounty color to Blue to avoid Green */
+    /* Bounty Green */
     .bounty {
-      background: rgba(77, 184, 255, 0.15);
-      border: 1px solid #4db8ff;
-      color: #4db8ff;
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid #00ff88;
+      color: #00ff88;
     }
 
     /* --- IMAGES --- */
@@ -215,7 +214,7 @@
 
   <h3>Step 2: Triggering the Leak</h3>
   <p>
-    Once the profile picture was saved, the trap was set. When any user—or even an admin—views the profile, their browser tries to render the image. To do so, it sends a GET request to my server.
+    Once the profile picture was saved, the trap was set. When any user, or even an admin, views the profile, their browser tries to render the image. To do so, it sends a GET request to my server.
   </p>
 
   <!-- IMAGE 2 -->
