@@ -23,7 +23,8 @@
       z-index: -1;
     }
 
-    a { color: #00ff88; text-decoration: none; transition: 0.2s; }
+    /* Reverted to Light Blue for links (No Green) */
+    a { color: #4db8ff; text-decoration: none; transition: 0.2s; }
     a:hover { color: white; text-decoration: underline; }
 
     /* --- CONTENT CONTAINER --- */
@@ -57,10 +58,11 @@
       letter-spacing: 0.5px;
     }
 
+    /* Removed Green from h3 - kept it neutral white/bold */
     h3 {
       margin-top: 35px;
-      color: #00ff88; /* Green accent for subheaders */
-      font-weight: 600;
+      color: #ffffff; 
+      font-weight: 700;
       font-size: 1.2rem;
     }
 
@@ -102,10 +104,11 @@
       color: orange;
     }
 
+    /* Changed Bounty color to Blue to avoid Green */
     .bounty {
-      background: rgba(0, 255, 136, 0.15);
-      border: 1px solid #00ff88;
-      color: #00ff88;
+      background: rgba(77, 184, 255, 0.15);
+      border: 1px solid #4db8ff;
+      color: #4db8ff;
     }
 
     /* --- IMAGES --- */
@@ -179,10 +182,10 @@
 
   <h2>Introduction</h2>
   <p>
-    Welcome back to my research blog. Recently, I was auditing a platform (let's call it <em>sport.fun</em>) when I discovered a privacy issue that could allow malicious actors to deanonymize users.
+    Recently I was hunting on a target when I discovered a privacy issue that could allow malicious actors to deanonymize users.
   </p>
   <p>
-    Privacy leaks are often overlooked in bug bounties, but when a vulnerability allows an attacker to correlate a user's on-chain or platform identity with their real-world physical location (via IP address), the impact becomes significant. Here is how I found it.
+    Privacy leaks are often overlooked in bug bounties, but when a vulnerability allows an attacker to correlate a user's identity with their real-world physical location (via IP address), the impact becomes significant. Here is how I found it.
   </p>
 
   <h2>The Discovery</h2>
@@ -226,7 +229,7 @@
     Checking my server logs, I received immediate confirmation. The logs revealed the <strong>Real IP address</strong>, the <strong>User-Agent</strong> (browser and OS info), and the <strong>Referer header</strong> of the victim.
   </p>
 
-  <!-- IMAGE 3: SCREENSHOT.PNG (Server Logs) -->
+  <!-- IMAGE 3: SERVER LOGS -->
   <div class="img-container">
     <img src="screenshot.png" alt="Server Logs">
     <span class="img-caption">Figure 3: My server logs capturing the victim's IP address and User-Agent.</span>
@@ -255,7 +258,7 @@
   
   <br>
   <p style="font-size: 0.9rem; color: #666; border-top: 1px solid #333; padding-top: 20px;">
-    <em>Thanks for reading! Follow me on <a href="https://x.com/robotics8n" target="_blank">X</a> for more write-ups.</em>
+    Written by s8n.
   </p>
 
 </div>
