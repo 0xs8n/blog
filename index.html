@@ -1,1 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>My Research</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+  <style>
+    /* 1. Force the body to be transparent so the canvas background shows */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: black; 
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: white;
+    }
+
+    /* 2. Canvas is fixed to the background */
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1; /* Puts animation behind text */
+    }
+
+    /* 3. The container for your text */
+    .content {
+      position: relative;
+      z-index: 10; /* Ensures text is ON TOP of canvas */
+      max-width: 800px;
+      margin: 80px auto 0; /* Pushes text down from top */
+      padding: 40px;
+      
+      /* Glassmorphism effect for visibility */
+      background: rgba(20, 20, 20, 0.8); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-weight: 300;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      color: #ffffff;
+    }
+
+    /* 4. Styling the Table of Contents Links */
+    .post-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .post-link {
+      display: block;
+      text-decoration: none;
+      color: white;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #00ff88; /* Green accent */
+      transition: all 0.3s ease;
+    }
+
+    .post-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(10px);
+      border-left-color: #00cc6a;
+    }
+
+    .post-title {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #00ff88;
+    }
+
+    .post-desc {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    /* X Button */
+    .x-follow {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 30;
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid #333;
+      font-size: 12px;
+      transition: 0.2s;
+    }
+    .x-follow:hover {
+      background: white;
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Top Right Link -->
+<a class="x-follow" href="https://x.com/robotics8n" target="_blank">follow me on X</a>
+
+<!-- Main Content Box -->
+<div class="content">
+  <h1>Research & Bug Bounties</h1>
+
+  <ul class="post-list">
+    <li>
+      <!-- This is the link to your article -->
+      <a href="ip-leakage.html" class="post-link">
+        <span class="post-title">User IP Address Leakage via Unproxied External Resources</span>
+        <span class="post-desc">Severity: Medium | Disclosed: Nov 2025</span>
+      </a>
+    </li>
+  </ul>
+
+</div>
+
+<script>
+  let f = 0;
+
+  function setup() {
+    // WEBGL mode is required for the 3D torus
+    createCanvas(windowWidth, windowHeight, WEBGL);
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+
+  function draw() {
+    // Background(0) clears the screen to black every frame
+    background(0);
+
+    // Lighting setup
+    ambientLight(60);
+    pointLight(255, 255, 255, 0, 0, 300);
+
+    let w = PI / 6;
+    let P = w * 3;
+
+    rotateX(PI / 6);
+    rotateY(f -= 0.01);
+
+    // Draw the 3D Grid
+    noStroke();
+    fill(255); // Ensure the shape is white/lit
+    
+    for (let x = 0; x < TAU; x += w) {
+      for (let y = 0; y < TAU; y += P) {
+        push();
+        rotateY(x);
+        rotateX(f * 0.3);
+
+        push();
+        translate(0, 0, 180);
+        // Use specular material for shiny look
+        specularMaterial(250);
+        torus(90, 12, 16, 8);
+        pop();
+
+        pop();
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
 
