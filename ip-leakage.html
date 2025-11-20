@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>IP Leakage Write-up - s8n</title>
-  <!-- p5.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 
   <style>
@@ -14,7 +13,7 @@
       background: black;
       font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #e0e0e0;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     canvas {
@@ -34,8 +33,8 @@
       max-width: 800px;
       margin: 40px auto 100px;
       padding: 50px;
-      background: rgba(15, 15, 15, 0.85); /* Dark semi-transparent background */
-      backdrop-filter: blur(8px);         /* Blurs the animation behind text */
+      background: rgba(15, 15, 15, 0.85);
+      backdrop-filter: blur(8px);
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
@@ -50,21 +49,25 @@
     }
 
     h2 {
-      margin-top: 40px;
+      margin-top: 45px;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       padding-bottom: 10px;
       color: #fff;
+      font-weight: 400;
+      letter-spacing: 0.5px;
     }
 
     h3 {
-      margin-top: 30px;
-      color: #ccc;
+      margin-top: 35px;
+      color: #00ff88; /* Green accent for subheaders */
       font-weight: 600;
+      font-size: 1.2rem;
     }
 
     p, li {
       font-size: 1.05rem;
       color: #ccc;
+      margin-bottom: 20px;
     }
 
     code {
@@ -73,13 +76,14 @@
       border-radius: 4px;
       font-family: "Courier New", monospace;
       color: #ff9999;
+      font-size: 0.9em;
     }
 
     /* --- BOUNTY BADGES --- */
     .meta-header {
       display: flex;
       gap: 15px;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       flex-wrap: wrap;
     }
 
@@ -106,7 +110,7 @@
 
     /* --- IMAGES --- */
     .img-container {
-      margin: 30px 0;
+      margin: 40px 0;
       text-align: center;
     }
 
@@ -119,7 +123,7 @@
 
     .img-caption {
       display: block;
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 0.85rem;
       color: #777;
       font-style: italic;
@@ -134,7 +138,7 @@
     }
     .back-btn:hover { color: white; text-decoration: none; }
 
-    /* --- FOLLOW BUTTON (Top Right) --- */
+    /* --- FOLLOW BUTTON --- */
     .x-follow {
       position: fixed;
       top: 20px;
@@ -173,82 +177,91 @@
     <div class="badge" style="border: 1px solid #555; color: #aaa;">Date: Nov 2025</div>
   </div>
 
-  <h2>Vulnerability Summary</h2>
+  <h2>Introduction</h2>
   <p>
-    I discovered a privacy issue that allows attackers to capture IP addresses and metadata of users who view their profiles. The profile picture feature accepts arbitrary external URLs. 
+    Welcome back to my research blog. Recently, I was auditing a platform (let's call it <em>sport.fun</em>) when I discovered a privacy issue that could allow malicious actors to deanonymize users.
   </p>
   <p>
-    When users view a profile with an external image URL, their browser makes a direct request to that external domain, leaking sensitive information to the profile owner without the visitor's knowledge or consent.
+    Privacy leaks are often overlooked in bug bounties, but when a vulnerability allows an attacker to correlate a user's on-chain or platform identity with their real-world physical location (via IP address), the impact becomes significant. Here is how I found it.
   </p>
 
-  <h3>Information Disclosed</h3>
-  <ul>
-    <li><strong>IP Address</strong> (Location data)</li>
-    <li><strong>User-Agent Strings</strong> (Browser version, OS details)</li>
-    <li><strong>Referer Header</strong> (Confirming the profile URL visited)</li>
-    <li><strong>Timestamp</strong> of the profile view</li>
-  </ul>
+  <h2>The Discovery</h2>
+  <p>
+    While testing the profile settings, I noticed the "Profile Picture" feature allowed users to upload images via URL. I immediately wondered: <em>Does the server download this image and host it? Or does it force every visitor's browser to fetch it directly?</em>
+  </p>
+  <p>
+    I realized that the application was loading external resources directly from third-party servers without proxying the request through their backend. This meant that if I could control the image URL, I could see the IP address of anyone who viewed my profile.
+  </p>
 
-  <h2>Proof of Concept (PoC)</h2>
+  <h2>The Exploitation</h2>
   
-  <h3>Step 1: Setup</h3>
+  <h3>Step 1: The Setup</h3>
   <p>
-    I set my profile picture URL to a domain I control (using Interactsh/Oast):<br>
-    <code>https://[attacker-domain].oast.fun/.png</code>
+    To verify this, I needed a server that I controlled to capture the incoming requests. I used an OAST (Out-of-Band Application Security Testing) service to generate a payload.
+  </p>
+  <p>
+    I set my profile picture URL to my controlled domain:
+    <br><code>https://[attacker-domain].oast.fun/.png</code>
   </p>
 
-  <!-- IMAGE 1: Setting the profile picture -->
+  <!-- IMAGE 1 -->
   <div class="img-container">
-    <img src="image.png" alt="Setting the Malicious Payload in Profile">
+    <img src="image.png" alt="Payload Injection">
     <span class="img-caption">Figure 1: Injecting the external payload into the profile picture input.</span>
   </div>
 
-  <h3>Step 2: Execution</h3>
+  <h3>Step 2: Triggering the Leak</h3>
   <p>
-    When any user views the affected profile, their browser automatically attempts to load the image. This creates a direct connection to my server.
+    Once the profile picture was saved, the trap was set. When any user—or even an admin—views the profile, their browser tries to render the image. To do so, it sends a GET request to my server.
   </p>
 
-  <!-- IMAGE 2: The Network Request/Log -->
+  <!-- IMAGE 2 -->
   <div class="img-container">
-    <img src="image(1).png" alt="Log of IP and User Agent">
-    <span class="img-caption">Figure 2: Attacker's server logs confirming receipt of Victim's IP and User-Agent.</span>
+    <img src="image(1).png" alt="Browser Request">
+    <span class="img-caption">Figure 2: The browser automatically making the request to the external source.</span>
   </div>
 
   <h3>Step 3: Confirmation</h3>
   <p>
-    The attacker's server logs the visitor's IP address, User-Agent, Referer header, and timestamp immediately upon the page load. This enables malicious actors to collect detailed visitor information and track who views their profile.
+    Checking my server logs, I received immediate confirmation. The logs revealed the <strong>Real IP address</strong>, the <strong>User-Agent</strong> (browser and OS info), and the <strong>Referer header</strong> of the victim.
   </p>
 
-  <h2>Impact</h2>
-  <p>
-    This vulnerability allows attackers to de-anonymize users through PII leakage, specifically IP addresses. The impact is amplified if malicious actors place themselves on the leaderboard, where they could collect data from a large number of unsuspecting users.
-  </p>
-
-  <h2>Remediation</h2>
-  <p>
-    I recommended implementing an image proxy to serve external profile pictures through the platform's infrastructure. This prevents direct requests from user browsers to external domains. This approach is standard practice on platforms like Discord, Reddit, and Slack.
-  </p>
-
-  <h2>Timeline & Reward</h2>
-  <p>
-    The team assessed the finding as <strong>Medium Severity</strong> and awarded a bounty of <strong>$1,675</strong>.
-  </p>
-
-  <!-- IMAGE 3: The Payout -->
+  <!-- IMAGE 3: SCREENSHOT.PNG (Server Logs) -->
   <div class="img-container">
-    <img src="payout.jpg" alt="Bounty Payout Confirmation">
-    <span class="img-caption">Figure 3: Bounty confirmation.</span>
+    <img src="screenshot.png" alt="Server Logs">
+    <span class="img-caption">Figure 3: My server logs capturing the victim's IP address and User-Agent.</span>
+  </div>
+
+  <h2>Why This Matters</h2>
+  <p>
+    This vulnerability allows an attacker to de-anonymize users. On a platform like this, where users might want to remain pseudonymous, linking an account to a physical home IP address is a privacy violation. The impact is amplified if a malicious actor places themselves on the <strong>Leaderboard</strong>, potentially harvesting data from hundreds of users passively.
+  </p>
+
+  <h2>The Fix</h2>
+  <p>
+    I recommended to the team that they implement an image proxy to serve external profile pictures through their own infrastructure. This prevents direct requests from user browsers to external domains. This approach is standard practice on platforms like Discord, Reddit, and Slack.
+  </p>
+
+  <h2>Timeline & Payout</h2>
+  <p>
+    The team was quick to respond and validated the finding. They assessed it as <strong>Medium Severity</strong> and rewarded a bounty of <strong>$1,675</strong>.
+  </p>
+
+  <!-- IMAGE 4: PAYOUT -->
+  <div class="img-container">
+    <img src="payout.jpg" alt="Bounty Payout">
+    <span class="img-caption">Figure 4: Bounty confirmation.</span>
   </div>
   
   <br>
-  <p style="font-size: 0.9rem; color: #666;">
-    <em>Report by s8n.</em>
+  <p style="font-size: 0.9rem; color: #666; border-top: 1px solid #333; padding-top: 20px;">
+    <em>Thanks for reading! Follow me on <a href="https://x.com/robotics8n" target="_blank">X</a> for more write-ups.</em>
   </p>
 
 </div>
 
 <script>
-  /* --- BACKGROUND ANIMATION --- */
+  /* --- ANIMATION LOOP --- */
   let f = 0;
 
   function setup() {
@@ -278,7 +291,7 @@
 
         push();
         translate(0, 0, 180);
-        // Using a slightly higher detail torus for the article page
+        specularMaterial(200); 
         torus(90, 12, 16, 8);
         pop();
 
